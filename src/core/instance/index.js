@@ -11,7 +11,7 @@ function Vue (options) {
   ) {
     warn('Vue is a constructor and should be called with the `new` keyword')
   }
-  this._init(options)
+  this._init(options) // new Vue()之后，会将参数携带到此处进行初始化。
 }
 
 initMixin(Vue)
