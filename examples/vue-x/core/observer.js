@@ -1,18 +1,18 @@
 import Dep from './dep'
 
 export default class Observer {
-    constructor(value) {
-        this.value = value
-        this.walk(value)
+    constructor(data) {
+        this.data = data
+        this.walk(data)
     }
 
-    walk(value) {
-        Object.keys(value).forEach(key => this.convert(key, value[key]))
+    walk(data) {
+        Object.keys(data).forEach(key => this.convert(key, data[key]))
     }
 
     convert(key, val) {
         // 添加setter和getter
-        defineReactive(this.value, key, val)
+        defineReactive(this.data, key, val)
     }
 }
 
@@ -23,17 +23,17 @@ export function observe(value) {
     return new Observer(value)
 }
 
-export function defineReactive(obj, key, val) {
+export function defineReactive(data, key, val) {
     const dep = new Dep()
-    var childObserver = observe(val)
+    let childObserver = observe(val)
 
-    Object.defineProperty(obj, key, {
+    Object.defineProperty(data, key, {
         enumerable: true,
         configurable: true,
         get: () => {
             console.log('get value')
             if (Dep.target) {
-                dep.addSub(Dep.target)
+                dep.depend()
             }
             return val
         },

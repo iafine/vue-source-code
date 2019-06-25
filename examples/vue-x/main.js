@@ -20,3 +20,6 @@ const vue = new Vue({
 })
 
 vue.$watch('date', () => console.log('date is changed'))
+
+
+vue.title = '123'
