@@ -1,16 +1,25 @@
-import { updateFor } from "_typescript@3.5.2@typescript";
 
 export default class Compile {
 
     constructor(el, vm) {
         this.$vm = vm
-        this.$em = this.isElementNode(el) ? el : document.querySelector(el)
+        this.$el = this.isElementNode(el) ? el : document.querySelector(el)
 
         if (this.$el) {
             this.$fragment = this.nodeToFragment(this.$el);
             this.init()
             this.$el.appendChild(this.$fragment)
         }
+    }
+
+    nodeToFragment(el) {
+        const fragment = document.createDocumentFragment()
+        let child = fragment
+
+        while (child = el.firstChild) {
+            fragment.appendChild(child)
+        }
+        return fragment
     }
 
     init() {
@@ -20,13 +29,13 @@ export default class Compile {
     compileElement(el) {
         const childNodes = el.childNodes
         const me = this
-        
-        [].slice.call(childNodes).forEach(node => {
+
+        childNodes.forEach(node => {
             const text = node.textContent
             const reg = /\{\{(.*)\}\}/
 
-            if (me.isElementNode) {
-                me.compile()
+            if (me.isElementNode(node)) {
+                me.compile(node)
             } else if (me.isTextNode(node) && reg.test(text)) {
                 me.compileText(node, RegExp.$1.trim())
             }
@@ -38,10 +47,10 @@ export default class Compile {
     }
 
     compile(node) {
-        const nodeAttrs = node.attributes
+        const nodeAttrs = [...node.attributes]
         const me = this
-
-        [].slice.call(nodeAttrs).forEach(attr => {
+        
+        nodeAttrs.forEach(attr => {
             const attrName = attr.name
             if (me.isDirective(attrName)) {
                 // 如果是指令
@@ -49,7 +58,7 @@ export default class Compile {
                 const dir = attrName.substring(2)
 
                 if (me.isEventDirective(dir)) {
-                    compileUtil.eventHandler(node, me.$vm, exp, dir)
+                    compileUtil.event(node, me.$vm, exp, dir)
                 } else {
                     compileUtil[dir] && compileUtil[dir](node, me.$vm, exp)
                 }
@@ -81,7 +90,7 @@ export default class Compile {
 }
 
 const compileUtil = {
-    
+
     text(node, vm, exp) {
         this.bind(node, vm, exp, 'text')
     },
@@ -100,7 +109,7 @@ const compileUtil = {
         const me = this
         const val = this._getVMVal(vm, exp)
 
-        node,addEventListener('input', e => {
+        node.addEventListener('input', e => {
             const newValue = e.target.value
             if (val === newValue) {
                 return

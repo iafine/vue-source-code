@@ -1,31 +1,30 @@
-import {observe} from './observer'
+import { observe } from './observer'
 import Watcher from './watcher'
+import Compile from './compile';
 
 export default class Vue {
 
-    constructor(options = {}) {
-        this.$options = options // Vue实例参数
-        this.$el = document.querySelector(options.el) // 获取DOM节点
-        
-        let data = (this._data = this.$options.data)
-        Object.keys(data).forEach(key => this._proxy(key))  // 将data所有的属性绑定到Vue实例上
+    constructor(options) {
 
-        // 监听数据
-        observe(data)
+        this.$options = options || {} // Vue实例参数
 
-        // 渲染DOM
-        this._renderDOM()
+        const data = this._data = this.$options.data
+
+        // 数据代理 vm.xxx -> vm._data.xxx
+        Object.keys(data).forEach(key => {
+            this._proxy(key)
+        })
+
+        // 初始化计算属性
+        this._computed()
+
+        observe(data, this)
+
+        this.$compile = new Compile(options.el || document.body, this)
     }
 
     $watch(expOrFn, cb) {
         new Watcher(this, expOrFn, cb)
-    }
-
-    _renderDOM() {
-        console.log('Updated DOM')
-        if (this.$el && this.$options && this.$options.template) {
-            this.$el.innerHTML = this.$options.template(this._data)
-        }
     }
 
     _proxy(key) {
@@ -33,9 +32,23 @@ export default class Vue {
             configurable: true, // 该属性可以被修改，也可以被删除
             enumerable: true,   // 该属性可以出现在对象的枚举属性中
             get: () => this._data[key],
-            set: val => {
-                this._data[key] = val
+            set: newVal => {
+                this._data[key] = newVal
             }
         })
+    }
+
+    _computed() {
+        const computed = this.$options.computed
+        if (typeof computed === 'object') {
+            Object.keys(computed).forEach(key => {
+                Object.defineProperty(this, key, {
+                    configurable: true, // 该属性可以被修改，也可以被删除
+                    enumerable: true,   // 该属性可以出现在对象的枚举属性中
+                    get: () => computed[key] === 'function' ? computed[key] : computed[key].get,
+                    set: () => {}
+                })
+            })
+        }
     }
 }

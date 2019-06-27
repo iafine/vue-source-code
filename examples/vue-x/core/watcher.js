@@ -6,28 +6,58 @@ export default class Watcher {
         this.vm = vm    // 当前的vue实例
         this.cb = cb    // 当数据更新时，需要执行的回调函数
         this.expOrFn = expOrFn  // 被监听的数据
-        this.val = this.getValue()   // 更新之前的数据
+        this.depIds = {}
+
+        if (typeof expOrFn === 'function') {
+            this.getter = expOrFn
+        } else {
+            this.getter = this.parseGetter(expOrFn.trim())
+        }
+
+        this.value = this.get()
     }
 
-    // 更新函数，由订阅者dep调用
     update() {
-        this.vm._renderDOM()    // 更新DOM
         this.run()
     }
 
     run() {
-        const val = this.getValue()
-        if (val !== this.val) {
-            this.val = val
-            this.cb.call(this.vm)
+        const value = this.get()
+        const oldValue = this.value
+        if (value !== oldValue) {
+            this.value = value
+            this.cb.call(this.vm, value, oldValue)
+        }
+    }
+    
+    addDep(dep) {
+        if (!this.depIds.hasOwnProperty(dep.id)) {
+            dep.addSub(this)
+            this.depIds[dep.id] = dep
         }
     }
 
-    getValue() {
+    get() {
         Dep.target = this
-        const val = this.vm._data[this.expOrFn]
-        // 将target置空，用于下次Watcher使用
+        const value = this.getter.call(this.vm, this.vm)
         Dep.target = null
-        return val
+        return value
+    }
+
+    parseGetter(exp) {
+        if (/[^\w.$]/.test(exp)) {
+            return
+        }
+        const exps = exp.split('.')
+        
+        return obj => {
+            for (let i = 0, len = exps.length; i < len; i++) {
+                if (!obj) {
+                    return
+                }
+                obj = obj[exps[i]]
+            }
+            return obj
+        }
     }
 }

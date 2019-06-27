@@ -1,25 +1,31 @@
 import Vue from './core'
 
+/**
+ * 1. nodeType是什么意思，分别有哪几种
+ */
 const vue = new Vue({
     el: '#app',
-    template(data) {
-        return `
-        <h1>${data.title}</h1>
-        <h2>作者：<strong>${data.author.name}</strong></h2>
-        <p>${data.info}</p>
-        <p>${data.date}</p>`;
-    },
     data: {
-        title: 'Hello Vue-X',
-        info: '从零实现Vue数据绑定',
-        author: {
-            name: 'LiYang'
-        },
-        date: new Date()
-    }
+        someStr: 'hello ',
+        // className: 'btn',
+        // htmlStr: '<span style="color: #f00;">red</span>',
+        // child: {
+        //     someStr: 'World !'
+        // }
+    },
+    // computed: {
+    //     getHelloWord() {
+    //         return this.someStr + this.child.someStr;
+    //     }
+    // },
+    // methods: {
+    //     clickBtn() {
+    //         var randomStrArr = ['childOne', 'childTwo', 'childThree'];
+    //         this.child.someStr = randomStrArr[parseInt(Math.random() * 3)];
+    //     }
+    // }
 })
 
-vue.$watch('date', () => console.log('date is changed'))
-
-
-vue.title = '123'
+// vue.$watch('child.someStr', () => {
+//     console.log(arguments);
+// });
