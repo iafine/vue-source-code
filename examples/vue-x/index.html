@@ -10,11 +10,26 @@
 
 <body>
   <div id="app">
-    <input type="text" v-model="message">
-    <!-- <input type="text" v-model="child.someStr">
-    <p>{{ getHelloWord }}</p>
-    <p v-html="htmlStr"></p>
-    <button v-on:click="clickBtn">change model</button> -->
+    <div>
+      <p>v-model绑定属性：</p>
+      <input type="text" v-model="message">
+    </div>
+    <div>
+      <p>v-model绑定子对象的属性：</p>
+      <input type="text" v-model="person.name">
+    </div>
+    <div>
+      <p>computed计算属性：</p>
+      <p>{{ sayHello }}</p>
+    </div>
+    <div>
+      <p>v-html渲染属性：</p>
+      <p v-html="html"></p>
+    </div>
+    <div>
+      <p>v-on事件属性：</p>
+      <button v-on:click="handleClicked">点击改变我的名字</button>
+    </div>
   </div>
   <script type="text/javascript" src="bundle.js"></script>
 </body>

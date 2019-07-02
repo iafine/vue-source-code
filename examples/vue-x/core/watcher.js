@@ -31,10 +31,10 @@ export default class Watcher {
     }
     
     addDep(dep) {
-        if (!this.depIds.hasOwnProperty(dep.id)) {
-            dep.addSub(this)
-            this.depIds[dep.id] = dep
-        }
+        dep.addSub(this)
+        this.depIds[dep.id] = dep
+        // if (!this.depIds.hasOwnProperty(dep.id)) {
+        // }
     }
 
     get() {

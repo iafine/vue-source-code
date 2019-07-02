@@ -107,15 +107,14 @@ const compileUtil = {
     model(node, vm, exp) {
         this.bind(node, vm, exp, 'model')
 
-        const me = this
-        const val = this._getVMVal(vm, exp)
+        let val = this._getVMVal(vm, exp)
 
         node.addEventListener('input', e => {
             const newValue = e.target.value
             if (val === newValue) {
                 return
             }
-            me._setVmVal(vm, exp, newValue)
+            this._setVMVal(vm, exp, newValue)
             val = newValue
         })
     },
@@ -149,7 +148,7 @@ const compileUtil = {
     },
 
     _setVMVal(vm, exp, value) {
-        const val = vm
+        let val = vm
         exp = exp.split('.')
         exp.forEach((k, i) => {
             if (i < exp.length - 1) {
@@ -172,7 +171,7 @@ const updater = {
     },
 
     classUpdater(node, value, oldValue) {
-        const className = node.className
+        let className = node.className
         className = className.replace(oldValue, '').replace(/\s$/, '')
 
         const space = className && String(value) ? ' ' : ''
@@ -180,6 +179,7 @@ const updater = {
     },
 
     modelUpdater(node, value, oldValue) {
+        console.log('v-model更新触发：节点:', node, '属性值变化：' + oldValue + ' --> ' + value)
         node.value = typeof value === 'undefined' ? '' : value
     }
 }

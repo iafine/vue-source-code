@@ -45,7 +45,9 @@ export default class Vue {
                 Object.defineProperty(this, key, {
                     configurable: true, // 该属性可以被修改，也可以被删除
                     enumerable: true,   // 该属性可以出现在对象的枚举属性中
-                    get: () => computed[key] === 'function' ? computed[key] : computed[key].get,
+                    get: typeof computed[key] === 'function' 
+                    ? computed[key] 
+                    : computed[key].get,
                     set: () => {}
                 })
             })
