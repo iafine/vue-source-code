@@ -1,3 +1,4 @@
+import Watcher from './watcher'
 
 export default class Compile {
 
@@ -139,7 +140,7 @@ const compileUtil = {
     },
 
     _getVMVal(vm, exp) {
-        const val = vm
+        let val = vm
         exp = exp.split('.')
         exp.forEach(k => {
             val = val[k]

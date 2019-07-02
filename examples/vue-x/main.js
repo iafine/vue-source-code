@@ -6,7 +6,7 @@ import Vue from './core'
 const vue = new Vue({
     el: '#app',
     data: {
-        someStr: 'hello ',
+        message: 'hello Vue-X',
         // className: 'btn',
         // htmlStr: '<span style="color: #f00;">red</span>',
         // child: {
